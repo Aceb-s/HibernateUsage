@@ -10,7 +10,6 @@ public class HibernateUtil {
         try {
             System.out.println("Попытка загрузки hibernate.cfg.xml...");
 
-            // Создаем Configuration и настраиваем её
             Configuration configuration = new Configuration();
             configuration.configure("hibernate.cfg.xml"); // Ищет в classpath
             configuration.addAnnotatedClass(User.class);
