@@ -51,5 +51,6 @@ public class User {
     public String toString() {
         return String.format("User[id=%d, name='%s', hometown='%s', age=%d]",
                 id, name, hometown, age);
+
     }
 }

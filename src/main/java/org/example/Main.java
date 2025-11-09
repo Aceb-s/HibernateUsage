@@ -142,6 +142,7 @@ public class Main {
             System.out.println("User deleted");
         } catch (Exception e) {
             System.out.println("Issue occured while deleting User: " + e.getMessage());
+
         }
     }
 }

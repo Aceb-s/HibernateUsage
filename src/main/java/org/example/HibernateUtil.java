@@ -8,14 +8,14 @@ public class HibernateUtil {
 
     private static SessionFactory buildSessionFactory() {
         try {
-            System.out.println("Попытка загрузки hibernate.cfg.xml...");
+            System.out.println("Attempt to load hibernate.cfg.xml...");
 
             Configuration configuration = new Configuration();
             configuration.configure("hibernate.cfg.xml"); // Ищет в classpath
             configuration.addAnnotatedClass(User.class);
 
             SessionFactory factory = configuration.buildSessionFactory();
-            System.out.println("SessionFactory успешно создана!");
+            System.out.println("SessionFactory created successfully!");
             return factory;
 
         } catch (Exception e) {
@@ -32,7 +32,8 @@ public class HibernateUtil {
     public static void shutdown() {
         if (sessionFactory != null) {
             sessionFactory.close();
-            System.out.println("SessionFactory закрыта");
+            System.out.println("SessionFactory closed successfully!");
+
         }
     }
 }
