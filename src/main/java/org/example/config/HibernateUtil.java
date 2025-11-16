@@ -1,5 +1,6 @@
-package org.example;
+package org.example.config;
 
+import org.example.entity.User;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
@@ -8,18 +9,13 @@ public class HibernateUtil {
 
     private static SessionFactory buildSessionFactory() {
         try {
-            System.out.println("Attempt to load hibernate.cfg.xml...");
-
             Configuration configuration = new Configuration();
-            configuration.configure("hibernate.cfg.xml"); // Ищет в classpath
+            configuration.configure("hibernate.cfg.xml");
             configuration.addAnnotatedClass(User.class);
 
-            SessionFactory factory = configuration.buildSessionFactory();
-            System.out.println("SessionFactory created successfully!");
-            return factory;
-
+            return configuration.buildSessionFactory();
         } catch (Exception e) {
-            System.err.println("Creation issue SessionFactory: " + e.getMessage());
+            System.err.println("Ошибка создания SessionFactory: " + e.getMessage());
             e.printStackTrace();
             throw new ExceptionInInitializerError(e);
         }
@@ -32,9 +28,6 @@ public class HibernateUtil {
     public static void shutdown() {
         if (sessionFactory != null) {
             sessionFactory.close();
-            System.out.println("SessionFactory closed successfully!");
-
         }
     }
 }
-
