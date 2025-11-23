@@ -1,7 +1,8 @@
 package org.example.entity;
 
-import lombok.*;
 import javax.persistence.*;
+import lombok.*;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -9,7 +10,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString
+@AllArgsConstructor
+@Builder
 public class User {
 
     @Id
@@ -20,7 +22,7 @@ public class User {
     private String name;
 
     @Column(unique = true, nullable = false)
-    private String hometown;
+    private String email;
 
     private Integer age;
 
@@ -29,13 +31,6 @@ public class User {
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
-
-    public User(String name, String hometown, Integer age) {
-        this.name = name;
-        this.hometown = hometown;
-        this.age = age;
         this.createdAt = LocalDateTime.now();
     }
 }

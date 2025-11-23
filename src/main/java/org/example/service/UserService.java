@@ -1,102 +1,112 @@
 package org.example.service;
 
-import org.example.dao.UserDao;
+import org.example.dto.UserRequest;
+import org.example.dto.UserResponse;
 import org.example.entity.User;
-import lombok.extern.java.Log;
+import org.example.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-@Log
+@Slf4j
+@Service
+@RequiredArgsConstructor
+@Transactional
 public class UserService {
-    private final UserDao userDao;
 
-    public UserService() {
-        this.userDao = new UserDao();
+    private final UserRepository userRepository;
+
+    public UserResponse createUser(UserRequest userRequest) {
+        log.info("Creating new user: {}", userRequest.getEmail());
+
+        if (userRepository.existsByEmail(userRequest.getEmail())) {
+            throw new IllegalArgumentException("User with email " + userRequest.getEmail() + " already exists");
+        }
+
+        User user = User.builder()
+                .name(userRequest.getName())
+                .email(userRequest.getEmail())
+                .age(userRequest.getAge())
+                .build();
+
+        User savedUser = userRepository.save(user);
+        log.info("User created with ID: {}", savedUser.getId());
+
+        return mapToResponse(savedUser);
     }
 
-    public UserService(UserDao userDao) {
-        this.userDao = userDao;
-    }
+    @Transactional(readOnly = true)
+    public UserResponse getUserById(Long id) {
+        log.info("Fetching user by ID: {}", id);
 
-    public User createUser(String name, String hometown, Integer age) {
-        validateName(name);
-        validateHometown(hometown);
-        validateAge(age);
-
-        User user = new User(name, hometown, age);
-        Long id = userDao.save(user);
-        log.info("User created with ID: " + id);
-        return user;
-    }
-
-    public Optional<User> getUserById(Long id) {
-        validateId(id);
-        return userDao.findById(id);
-    }
-
-    public List<User> getAllUsers() {
-        return userDao.findAll();
-    }
-
-    public void updateUser(Long id, String name, String hometown, Integer age) {
-        validateId(id);
-
-        User user = userDao.findById(id)
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + id));
 
-        if (name != null && !name.trim().isEmpty()) {
-            user.setName(name);
-        }
-        if (hometown != null && !hometown.trim().isEmpty()) {
-            user.setHometown(hometown);
-        }
-        if (age != null) {
-            validateAge(age);
-            user.setAge(age);
+        return mapToResponse(user);
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserResponse> getAllUsers() {
+        log.info("Fetching all users");
+
+        return userRepository.findAll().stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public UserResponse updateUser(Long id, UserRequest userRequest) {
+        log.info("Updating user with ID: {}", id);
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + id));
+
+        // Check if email is being changed and if new email already exists
+        if (!user.getEmail().equals(userRequest.getEmail()) &&
+                userRepository.existsByEmail(userRequest.getEmail())) {
+            throw new IllegalArgumentException("User with email " + userRequest.getEmail() + " already exists");
         }
 
-        userDao.update(user);
-        log.info("User updated with ID: " + id);
+        user.setName(userRequest.getName());
+        user.setEmail(userRequest.getEmail());
+        user.setAge(userRequest.getAge());
+
+        User updatedUser = userRepository.save(user);
+        log.info("User updated with ID: {}", id);
+
+        return mapToResponse(updatedUser);
     }
 
     public void deleteUser(Long id) {
-        validateId(id);
+        log.info("Deleting user with ID: {}", id);
 
-        if (!userDao.findById(id).isPresent()) {
+        if (!userRepository.existsById(id)) {
             throw new IllegalArgumentException("User not found with ID: " + id);
         }
 
-        userDao.delete(id);
-        log.info("User deleted with ID: " + id);
+        userRepository.deleteById(id);
+        log.info("User deleted with ID: {}", id);
     }
 
-    public Optional<User> findUserByHometown(String hometown) {
-        validateHometown(hometown);
-        return userDao.findByHometown(hometown);
+    @Transactional(readOnly = true)
+    public Optional<UserResponse> findUserByEmail(String email) {
+        log.info("Finding user by email: {}", email);
+
+        return userRepository.findByEmail(email)
+                .map(this::mapToResponse);
     }
 
-    private void validateName(String name) {
-        if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Name cannot be empty");
-        }
-    }
-
-    private void validateHometown(String hometown) {
-        if (hometown == null || hometown.trim().isEmpty()) {
-            throw new IllegalArgumentException("Hometown cannot be empty");
-        }
-    }
-
-    private void validateAge(Integer age) {
-        if (age == null || age < 0 || age > 150) {
-            throw new IllegalArgumentException("Age must be between 0 and 150");
-        }
-    }
-
-    private void validateId(Long id) {
-        if (id == null || id <= 0) {
-            throw new IllegalArgumentException("ID must be positive");
-        }
+    private UserResponse mapToResponse(User user) {
+        return new UserResponse(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getAge(),
+                user.getCreatedAt()
+        );
     }
 }
