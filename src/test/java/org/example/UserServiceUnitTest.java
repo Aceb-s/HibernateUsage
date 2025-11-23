@@ -1,9 +1,7 @@
 package org.example;
 
 import org.example.entity.User;
-import org.example.dao.UserDao;
 import org.example.service.UserService;
-import org.example.config.HibernateUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
