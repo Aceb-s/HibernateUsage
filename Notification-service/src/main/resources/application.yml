@@ -1,0 +1,37 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: notification-service
+  kafka:
+    bootstrap-servers: host.docker.internal:9092
+    consumer:
+      group-id: notification-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+  mail:
+    host: sandbox.smtp.mailtrap.io
+    port: 587
+    username: 7196a4e985fd95
+    password: 036a77b81025f1
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+        debug: true
+
+kafka:
+  topics:
+    user-events: user-events-topic
+
+logging:
+  level:
+    org.springframework.kafka: DEBUG
+    org.example.notificationservice: DEBUG
+    org.springframework.mail: DEBUG
