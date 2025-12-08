@@ -1,14 +1,15 @@
 package org.example.userservice.service;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.userservice.dto.UserRequest;
 import org.example.userservice.dto.UserResponse;
 import org.example.userservice.entity.User;
 import org.example.userservice.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final KafkaProducerService kafkaProducerService;
+    // private final KafkaProducerService kafkaProducerService;
 
     public UserResponse createUser(UserRequest userRequest) {
         log.info("Creating new user: {}", userRequest.getEmail());
@@ -33,12 +34,11 @@ public class UserService {
                 .name(userRequest.getName())
                 .email(userRequest.getEmail())
                 .age(userRequest.getAge())
+                .createdAt(LocalDateTime.now())
                 .build();
 
         User savedUser = userRepository.save(user);
         log.info("User created with ID: {}", savedUser.getId());
-
-        kafkaProducerService.sendUserEvent("CREATE", savedUser.getEmail(), savedUser.getName());
 
         return mapToResponse(savedUser);
     }
@@ -86,13 +86,12 @@ public class UserService {
     public void deleteUser(Long id) {
         log.info("Deleting user with ID: {}", id);
 
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + id));
+        if (!userRepository.existsById(id)) {
+            throw new IllegalArgumentException("User not found with ID: " + id);
+        }
 
         userRepository.deleteById(id);
         log.info("User deleted with ID: {}", id);
-
-        kafkaProducerService.sendUserEvent("DELETE", user.getEmail(), user.getName());
     }
 
     @Transactional(readOnly = true)
