@@ -1,25 +1,28 @@
 package org.example.userservice.dto;
 
-import jakarta.validation.constraints.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserRequest {
 
-    @NotBlank(message = "Name is mandatory")
-    @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters")
+    @NotBlank(message = "Имя обязательно")
     private String name;
 
-    @NotBlank(message = "Email is mandatory")
-    @Email(message = "Email should be valid")
+    @NotBlank(message = "Email обязателен")
+    @Email(message = "Некорректный формат email")
     private String email;
 
-    @NotNull(message = "Age is mandatory")
-    @Min(value = 0, message = "Age must be at least 0")
-    @Max(value = 150, message = "Age must be less than 150")
+    @NotNull(message = "Возраст обязателен")
+    @Min(value = 0, message = "Возраст не может быть отрицательным")
     private Integer age;
 }
