@@ -1,7 +1,7 @@
-package org.example.userservice.sercice;
+package org.example.userservice.service;
 
-import org.example.entity.User;
-import org.example.service.UserService;
+import org.example.userservice.entity.User;
+import org.example.userservice.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

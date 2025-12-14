@@ -1,7 +1,7 @@
 package org.example.userservice.service;
 
-import org.example.dto.UserRequest;
-import org.example.dto.UserResponse;
+import org.example.userservice.dto.UserRequest;
+import org.example.userservice.dto.UserResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

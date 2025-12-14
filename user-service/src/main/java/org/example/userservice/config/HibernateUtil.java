@@ -1,16 +1,28 @@
 package org.example.userservice.config;
 
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
 public class HibernateUtil {
-    private static final SessionFactory sessionFactory = buildSessionFactory();
+    private static SessionFactory sessionFactory;
 
-    private static SessionFactory buildSessionFactory() {
+    static {
         try {
-            return new Configuration().configure().buildSessionFactory();
-        } catch (Throwable ex) {
-            throw new ExceptionInInitializerError(ex);
+            StandardServiceRegistry standardRegistry = new StandardServiceRegistryBuilder()
+                    .configure("hibernate.cfg.xml")
+                    .build();
+
+            Metadata metadata = new MetadataSources(standardRegistry)
+                    .getMetadataBuilder()
+                    .build();
+
+            sessionFactory = metadata.getSessionFactoryBuilder().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ExceptionInInitializerError("Failed to create Hibernate SessionFactory: " + e.getMessage());
         }
     }
 
@@ -19,6 +31,8 @@ public class HibernateUtil {
     }
 
     public static void shutdown() {
-        getSessionFactory().close();
+        if (sessionFactory != null) {
+            sessionFactory.close();
+        }
     }
 }
