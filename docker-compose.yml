@@ -1,17 +1,57 @@
-services:
-  zookeeper:
-    image: wurstmeister/zookeeper:latest
-    ports:
-      - "2181:2181"
+version: '3.8'
 
-  kafka:
-    image: wurstmeister/kafka:2.13-2.8.1
-    ports:
-      - "9092:9092"
+services:
+  postgres:
+    image: postgres:15
     environment:
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_CREATE_TOPICS: "user-events-topic:1:1"
+      POSTGRES_DB: userdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  config-server:
+    build: ./config-server
+    ports:
+      - "8888:8888"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
     depends_on:
-      - zookeeper
+      - postgres
+
+  discovery-service:
+    build: ./discovery-service
+    ports:
+      - "8761:8761"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - config-server
+
+  user-service:
+    build: ./user-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_URL: jdbc:postgresql://postgres:5432/userdb
+    depends_on:
+      - discovery-service
+      - config-server
+      - postgres
+
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      - discovery-service
+      - config-server
+      - user-service
+
+volumes:
+  postgres_data:

@@ -1,0 +1,35 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: config-server
+  profiles:
+    active: native
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: classpath:/config-repo
+        encrypt:
+          enabled: false
+
+eureka:
+  client:
+    enabled: false
+  instance:
+    enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,env,configprops
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    org.springframework.cloud.config: DEBUG
+    org.example.configserver: DEBUG
