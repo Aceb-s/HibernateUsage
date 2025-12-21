@@ -32,7 +32,7 @@ try {
         -Body  
         -TimeoutSec 10
     
-    Write-Host "   ✓ Пользователь создан успешно!" -ForegroundColor Green
+    Write-Host "   Пользователь создан успешно!" -ForegroundColor Green
     Write-Host "   Ответ: " -ForegroundColor Gray
 } catch {
     Write-Host "   ✗ Ошибка при создании пользователя" -ForegroundColor Red
@@ -57,7 +57,7 @@ try {
             Write-Host "   -  ()" -ForegroundColor Gray
         }
     } else {
-        Write-Host "   ⓘ Нет пользователей или пустой ответ" -ForegroundColor Yellow
+        Write-Host "    Нет пользователей или пустой ответ" -ForegroundColor Yellow
     }
 } catch {
     Write-Host "   ✗ Ошибка: " -ForegroundColor Red
@@ -79,7 +79,7 @@ Write-Host "
 5. ЛОГИ NOTIFICATION-SERVICE:" -ForegroundColor Yellow
  = docker-compose logs notification-service --tail=30 2>&1
 if ( -match "(?i)(kafka|consumer|event|email|user)") {
-    Write-Host "   ✓ Найдены события Kafka/пользователей" -ForegroundColor Green
+    Write-Host "    Найдены события Kafka/пользователей" -ForegroundColor Green
      =  -split "
 " | Where-Object {  -match "(?i)(kafka|consumer|event|email|user)" }
      | Select-Object -First 3 | ForEach-Object {

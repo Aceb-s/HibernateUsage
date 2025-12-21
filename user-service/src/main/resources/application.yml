@@ -15,8 +15,8 @@ spring:
   
   datasource:
     url: jdbc:postgresql://localhost:5432/userdb
-    username: postgres      # <-- Должно быть postgres (не admin!)
-    password: "1"           # <-- Пароль 1 как в docker-compose
+    username: postgres
+    password: "1"
     driver-class-name: org.postgresql.Driver
   
   jpa:

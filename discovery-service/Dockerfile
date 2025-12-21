@@ -2,7 +2,6 @@
 WORKDIR /build
 COPY pom.xml .
 COPY src ./src
-# Пропускаем ВСЕ тесты полностью
 RUN mvn clean package -DskipTests -Dmaven.test.skip=true
 
 FROM eclipse-temurin:11-jre

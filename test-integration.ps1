@@ -29,13 +29,13 @@ Write-Host "
 try {
      = Invoke-RestMethod -Uri "http://localhost:8080/api/users" -Method Get -TimeoutSec 5
     if ( -and .Count -gt 0) {
-        Write-Host "   ✓ Найдено пользователей: 0" -ForegroundColor Green
+        Write-Host "   Найдено пользователей: 0" -ForegroundColor Green
         Write-Host "   Первый пользователь: " -ForegroundColor Gray
     } else {
-        Write-Host "   ⓘ Пользователей нет или пустой ответ" -ForegroundColor Yellow
+        Write-Host "    Пользователей нет или пустой ответ" -ForegroundColor Yellow
     }
 } catch {
-    Write-Host "   ✗ Ошибка: " -ForegroundColor Red
+    Write-Host "    Ошибка: " -ForegroundColor Red
 }
 
 # 3. Проверяем логи notification-service
@@ -43,13 +43,13 @@ Write-Host "
 3. ПРОВЕРКА ЛОГОВ NOTIFICATION-SERVICE:" -ForegroundColor Yellow
  = docker-compose logs notification-service --tail=20 2>&1
 if ( -match "(?i)(kafka|event|email|user|received|consum)") {
-    Write-Host "   ✓ Notification-service обрабатывает события!" -ForegroundColor Green
+    Write-Host "    Notification-service обрабатывает события!" -ForegroundColor Green
      =  -split "
 " | Where-Object {  -match "(?i)(kafka|event|email|user|received|consum)" }
     Write-Host "   Найдены сообщения:" -ForegroundColor Gray
      | Select-Object -First 3 | ForEach-Object { Write-Host "   - " -ForegroundColor Gray }
 } else {
-    Write-Host "   ⓗ В логах нет событий Kafka/Email" -ForegroundColor Yellow
+    Write-Host "    В логах нет событий Kafka/Email" -ForegroundColor Yellow
     Write-Host "   Полные логи:" -ForegroundColor Gray
      | Select-Object -Last 10
 }
@@ -65,7 +65,7 @@ try {
         Write-Host "   - " -ForegroundColor Gray
     }
 } catch {
-    Write-Host "   ✗ Не удалось получить топики Kafka" -ForegroundColor Red
+    Write-Host "    Не удалось получить топики Kafka" -ForegroundColor Red
 }
 
 # 5. Проверяем Eureka
@@ -76,20 +76,20 @@ try {
     Write-Host "   Сервисы в Eureka:" -ForegroundColor Gray
     
     if (.Content -match "USER-SERVICE") {
-        Write-Host "   ✓ USER-SERVICE" -ForegroundColor Green
+        Write-Host "    USER-SERVICE" -ForegroundColor Green
     }
     if (.Content -match "NOTIFICATION-SERVICE") {
-        Write-Host "   ✓ NOTIFICATION-SERVICE" -ForegroundColor Green
+        Write-Host "    NOTIFICATION-SERVICE" -ForegroundColor Green
     }
     if (.Content -match "API-GATEWAY") {
-        Write-Host "   ✓ API-GATEWAY" -ForegroundColor Green
+        Write-Host "    API-GATEWAY" -ForegroundColor Green
     }
 } catch {
-    Write-Host "   ✗ Eureka недоступна" -ForegroundColor Red
+    Write-Host "    Eureka недоступна" -ForegroundColor Red
 }
 
 Write-Host "
 === ИТОГ ===" -ForegroundColor Cyan
-Write-Host "✅ Система работает!" -ForegroundColor Green
-Write-Host "✅ Все сервисы взаимодействуют в Docker окружении" -ForegroundColor Green
-Write-Host "✅ Задание выполнено" -ForegroundColor Green
+Write-Host " Система работает!" -ForegroundColor Green
+Write-Host " Все сервисы взаимодействуют в Docker окружении" -ForegroundColor Green
+Write-Host " Задание выполнено" -ForegroundColor Green
