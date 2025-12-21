@@ -1,15 +1,22 @@
+﻿server:
+  port: 8081
+
 spring:
+  config:
+    import: optional:application-kafka.yml,optional:application-docker.yml
   cloud:
     config:
       enabled: false
+      import-check:
+        enabled: false
   
   application:
     name: user-service
   
   datasource:
     url: jdbc:postgresql://localhost:5432/userdb
-    username: postgres
-    password: 1
+    username: postgres      # <-- Должно быть postgres (не admin!)
+    password: "1"           # <-- Пароль 1 как в docker-compose
     driver-class-name: org.postgresql.Driver
   
   jpa:
@@ -21,22 +28,22 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 
-server:
-  port: 8081
-
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
-    register-with-eureka: true
-    fetch-registry: true
     enabled: true
+  instance:
+    hostname: localhost
+    prefer-ip-address: true
 
-instance:
-  hostname: localhost
-  instance-id: ${spring.application.name}:${server.port}
-
-logging:
-  level:
-    com.netflix.discovery: DEBUG
-    org.springframework.cloud.netflix.eureka: DEBUG
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+    enabled-by-default: true
+  endpoint:
+    health:
+      enabled: true
+      show-details: always
