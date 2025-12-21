@@ -2,48 +2,39 @@
   port: 8081
 
 spring:
-  config:
-    import: optional:application-kafka.yml,optional:application-docker.yml
-  cloud:
-    config:
-      enabled: false
-      import-check:
-        enabled: false
-  
   application:
     name: user-service
-  
   datasource:
-    url: jdbc:postgresql://localhost:5432/userdb
+    url: jdbc:postgresql://postgres:5432/userdb
     username: postgres
-    password: "1"
+    password: 1
     driver-class-name: org.postgresql.Driver
-  
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+    show-sql: true
 
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://discovery-service:8761/eureka/
     enabled: true
   instance:
-    hostname: localhost
     prefer-ip-address: true
+
+# ВРЕМЕННО ОТКЛЮЧАЕМ CIRCUIT BREAKER
+resilience4j:
+  circuitbreaker:
+    enabled: false
+  retry:
+    enabled: false
 
 management:
   endpoints:
     web:
       exposure:
         include: health,info,metrics
-    enabled-by-default: true
-  endpoint:
-    health:
-      enabled: true
-      show-details: always
