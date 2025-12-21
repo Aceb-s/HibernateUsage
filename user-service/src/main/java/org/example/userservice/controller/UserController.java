@@ -16,7 +16,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -30,6 +33,35 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 public class UserController {
 
     private final UserService userService;
+
+    @GetMapping("/test")
+    @Operation(summary = "Тестовый endpoint", description = "Проверка работы сервиса")
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("User Service is working! Time: " + new Date());
+    }
+
+    @GetMapping("/health")
+    @Operation(summary = "Health check", description = "Проверка здоровья сервиса")
+    public ResponseEntity<Map<String, String>> health() {
+        Map<String, String> health = new HashMap<>();
+        health.put("status", "UP");
+        health.put("service", "user-service");
+        health.put("timestamp", new Date().toString());
+        health.put("version", "1.0.0");
+        return ResponseEntity.ok(health);
+    }
+
+    @GetMapping("/info")
+    @Operation(summary = "Информация о сервисе", description = "Возвращает информацию о сервисе")
+    public ResponseEntity<Map<String, Object>> info() {
+        Map<String, Object> info = new HashMap<>();
+        info.put("service", "User Service");
+        info.put("description", "User Management Microservice");
+        info.put("status", "RUNNING");
+        info.put("port", 8081);
+        info.put("timestamp", new Date());
+        return ResponseEntity.ok(info);
+    }
 
     @PostMapping
     @Operation(summary = "Создать пользователя", description = "Создает нового пользователя")
